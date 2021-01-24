@@ -14,13 +14,13 @@ function authenticateToken(req, res, next) {
   // const token = authHeader && authHeader.split(' ')[1]
   // console.log("token: ", token)
   // if (token == null) return res.sendStatus(401) // if there isn't any token
-  //console.log(req.cookies)
-  jwt.verify(req.cookies.jwt, secretKey, (err, user) => {
-    console.log('error authenticateToken:', err)
-    if (err) return res.sendStatus(403)
-    req.user = user
-    next() // pass the execution off to whatever request the client intended
-  })
+    jwt.verify(req.cookies.jwt, secretKey, (err, user) => {
+      console.log('error authenticateToken:', err)
+      if (err) return res.sendStatus(403)
+      req.user = user
+      next() // pass the execution off to whatever request the client intended
+    })
+
 }
 
 // display dashboard page
@@ -41,7 +41,7 @@ Router.get('/', async(req, res) => {
   res.render('login')
 })
 
-Router.get('/register', async(req, res) => {
+Router.get('/register', authenticateToken, async(req, res) => {
   res.render('register')
 })
 
