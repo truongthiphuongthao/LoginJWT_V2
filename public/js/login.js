@@ -1,5 +1,4 @@
 
-var my_token = localStorage.getItem('my_token')
 function handleRegister(){
   let username = $('#username').val()
   let password = $('#password').val()
@@ -28,9 +27,10 @@ function handleLogin(){
       password: password
     },
     success: function(res){
-      console.log(res)
+      alert(res)
+     //  console.log(res)
       if(res.token){
-        window.localStorage.setItem('my_token', res.token)
+        // window.localStorage.setItem('my_token', res.token)
         window.location.href ="/dashboard"
      }
      else{

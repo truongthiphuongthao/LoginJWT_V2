@@ -1,4 +1,5 @@
 // delete post
+
 function handleDeletePost(value){
 	var id_post = value
 	$.ajax({

@@ -5,29 +5,28 @@ const jwt = require('jsonwebtoken')
 const secretKey = "mySecretKey"
 const path = require("path");
 
+
 // function
 function authenticateToken(req, res, next) {
   // Gather the jwt access token from the request header
-  const authHeader = req.headers['authorization']
-  const token = authHeader && authHeader.split(' ')[1]
-  if (token == null) return res.sendStatus(401) // if there isn't any token
-
-  jwt.verify(token, secretKey, (err, user) => {
-    console.log('error authenticateToken:', err)
-    if (err) return res.sendStatus(403)
-    req.user = user
-    next() // pass the execution off to whatever request the client intended
-  })
+  // const authHeader = req.headers['authorization']
+  // const token = authHeader && authHeader.split(' ')[1]
+  // if (token == null) return res.sendStatus(401) // if there isn't any token
+  console.log(req.header.cookies)
+  // jwt.verify(req.cookies, secretKey, (err, user) => {
+  //   console.log('error authenticateToken:', err)
+  //   if (err) return res.sendStatus(403)
+  //   req.user = user
+  //   next() // pass the execution off to whatever request the client intended
+  // })
 }
 
 // display dashboard page
 Router.get('/dashboard', async (req, res) =>{
 	//get all post
 	let post = await db.Post.find({})
-	console.log(post)
 	// get all comment
 	let comment = await db.Comment.find({})
-	console.log(comment)
 	res.render('index', {
 		posts: post,
 		comments: comment
@@ -36,6 +35,7 @@ Router.get('/dashboard', async (req, res) =>{
 
 // display login page
 Router.get('/', async(req, res) => {
+  console.log(req.header.cookies)
   res.render('login')
 })
 
@@ -100,6 +100,7 @@ Router.post('/login', async(req, res) => {
         token: token,
         message: "Login successfully"
       }
+      res.cookie({jwt : token})
       res.send(data)
       console.log("login: ",data)
     }
@@ -110,7 +111,7 @@ Router.post('/login', async(req, res) => {
 })
 
 // delete post
-Router.delete('/delete-post/:postId', async (req, res) => {
+Router.delete('/delete-post/:postId', authenticateToken, async (req, res) => {
 	try{
 		let postId = ObjectId(req.params.postId)
 		console.log(postId)
