@@ -12,7 +12,9 @@ function authenticateToken(req, res, next) {
   // const authHeader = req.headers['authorization']
   // const token = authHeader && authHeader.split(' ')[1]
   // if (token == null) return res.sendStatus(401) // if there isn't any token
-  console.log(req.cookies)
+  console.log('Sent cookie:', req.cookies)
+  // TODO: Verify token before calling next, or send unauthorized message (if no jwt/invalid jwt attached) (with HTTP code of 401)
+  next()
   // jwt.verify(req.cookies, secretKey, (err, user) => {
   //   console.log('error authenticateToken:', err)
   //   if (err) return res.sendStatus(403)
@@ -22,7 +24,7 @@ function authenticateToken(req, res, next) {
 }
 
 // display dashboard page
-Router.get('/dashboard', async (req, res) =>{
+Router.get('/dashboard', authenticateToken, async (req, res) =>{
 	//get all post
 	let post = await db.Post.find({})
 	// get all comment
@@ -39,7 +41,7 @@ Router.get('/', async(req, res) => {
   res.render('login')
 })
 
-Router.get('/register', async(req, res) => {
+Router.get('/register', authenticateToken, async(req, res) => {
   res.render('register')
 })
 
@@ -100,9 +102,7 @@ Router.post('/login', async(req, res) => {
         token: token,
         message: "Login successfully"
       }
-      console.log(jwt)
-      console.log(token)
-      res.cookie(jwt, token).send(data)
+      res.cookie('jwt', token).send(data)
       console.log("login: ",data)
     }
   }catch(err){
