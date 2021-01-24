@@ -10,7 +10,6 @@ function handleRegister(){
       password: password
     },
     success: function(res){
-      alert(res.message)
       window.location.href = "/"
     }
   })

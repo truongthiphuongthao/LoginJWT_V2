@@ -12,7 +12,7 @@ function authenticateToken(req, res, next) {
   // const authHeader = req.headers['authorization']
   // const token = authHeader && authHeader.split(' ')[1]
   // if (token == null) return res.sendStatus(401) // if there isn't any token
-  console.log(req.header.cookies)
+  console.log(req.cookies)
   // jwt.verify(req.cookies, secretKey, (err, user) => {
   //   console.log('error authenticateToken:', err)
   //   if (err) return res.sendStatus(403)
@@ -100,8 +100,9 @@ Router.post('/login', async(req, res) => {
         token: token,
         message: "Login successfully"
       }
-      res.cookie({jwt : token})
-      res.send(data)
+      console.log(jwt)
+      console.log(token)
+      res.cookie(jwt, token).send(data)
       console.log("login: ",data)
     }
   }catch(err){
