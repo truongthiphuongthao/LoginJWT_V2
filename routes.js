@@ -10,19 +10,21 @@ const path = require("path");
 function authenticateToken(req, res, next) {
   // Gather the jwt access token from the request header
   // const authHeader = req.headers['authorization']
+  // console.log("authHeader ", authHeader)
   // const token = authHeader && authHeader.split(' ')[1]
+  // console.log("token: ", token)
   // if (token == null) return res.sendStatus(401) // if there isn't any token
-  console.log(req.cookies)
-  // jwt.verify(req.cookies, secretKey, (err, user) => {
-  //   console.log('error authenticateToken:', err)
-  //   if (err) return res.sendStatus(403)
-  //   req.user = user
-  //   next() // pass the execution off to whatever request the client intended
-  // })
+  //console.log(req.cookies)
+  jwt.verify(req.cookies.jwt, secretKey, (err, user) => {
+    console.log('error authenticateToken:', err)
+    if (err) return res.sendStatus(403)
+    req.user = user
+    next() // pass the execution off to whatever request the client intended
+  })
 }
 
 // display dashboard page
-Router.get('/dashboard', async (req, res) =>{
+Router.get('/dashboard', authenticateToken, async (req, res) =>{
 	//get all post
 	let post = await db.Post.find({})
 	// get all comment
@@ -44,12 +46,12 @@ Router.get('/register', async(req, res) => {
 })
 
 // display add post page
-Router.get('/add-post', async(req, res) => {
+Router.get('/add-post', authenticateToken,  async(req, res) => {
   res.render('add-post')
 })
 
 // display update post page
-Router.get('/update-post/:id', async(req, res) => {
+Router.get('/update-post/:id', authenticateToken,  async(req, res) => {
 	try{
 		let post_id = await db.Post.findById(req.params.id)
 		console.log(post_id)
@@ -100,9 +102,7 @@ Router.post('/login', async(req, res) => {
         token: token,
         message: "Login successfully"
       }
-      console.log(jwt)
-      console.log(token)
-      res.cookie(jwt, token).send(data)
+      res.cookie('jwt', token).send(data)
       console.log("login: ",data)
     }
   }catch(err){
@@ -140,7 +140,7 @@ Router.delete('/delete-post/:postId', authenticateToken, async (req, res) => {
 })
 
 // save post
-Router.post('/add-post', async(req, res) => {
+Router.post('/add-post', authenticateToken, async(req, res) => {
 	try{
 		let post_content = req.body.post_content
 		let image_links = req.body.image_links
@@ -160,7 +160,7 @@ Router.post('/add-post', async(req, res) => {
 })
 
 // update post
-Router.post('/update-post/:id', async(req, res) => {
+Router.post('/update-post/:id', authenticateToken, async(req, res) => {
 	try{
 		let id = req.body.id
 		let post_content = req.body.post_content
@@ -178,7 +178,7 @@ Router.post('/update-post/:id', async(req, res) => {
 })
 
 // save comment
-Router.post('/save-comment/:id', async(req, res) => {
+Router.post('/save-comment/:id', authenticateToken,  async(req, res) => {
 	try{
 		let post_id = req.body.post_id
 		let comment_details = req.body.comment_details
@@ -194,7 +194,7 @@ Router.post('/save-comment/:id', async(req, res) => {
 	}
 })
 
-Router.delete('/delete-comment/:id', async(req, res) => {
+Router.delete('/delete-comment/:id', authenticateToken, async(req, res) => {
 	try{
 		let _id = req.body._id
 		await db.Comment.findByIdAndDelete({_id: _id})
@@ -206,7 +206,7 @@ Router.delete('/delete-comment/:id', async(req, res) => {
 })
 
 // edit comments
-Router.post('/update-comment/:id', async(req, res) =>{
+Router.post('/update-comment/:id', authenticateToken, async(req, res) =>{
 	try{
 		let _id = req.body._id
 		let comment_details = req.body.comment_details
