@@ -66,7 +66,7 @@ Router.get('/update-post/:id', authenticateToken,  async(req, res) => {
 
 // logout
 Router.get('/logout', authenticateToken,  function(req,res){
-  res.cookie('jwt', '').send()
+  res.clearCookie('jwt').send()
 });
 
 // resgiter
