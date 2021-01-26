@@ -26,7 +26,7 @@ function handleLogin(){
       password: password
     },
     success: function(res){
-      alert(res)
+      // alert(res)
      //  console.log(res)
       if(res.token){
         // window.localStorage.setItem('my_token', res.token)

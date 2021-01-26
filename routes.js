@@ -41,7 +41,7 @@ Router.get('/', async(req, res) => {
   res.render('login')
 })
 
-Router.get('/register', authenticateToken, async(req, res) => {
+Router.get('/register', async(req, res) => {
   res.render('register')
 })
 
@@ -63,6 +63,11 @@ Router.get('/update-post/:id', authenticateToken,  async(req, res) => {
 		throw err
 	}
 })
+
+// logout
+Router.get('/logout', authenticateToken,  function(req,res){
+  res.cookie('jwt', '').send()
+});
 
 // resgiter
 Router.post('/register', async(req, res) => {
